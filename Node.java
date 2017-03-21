@@ -4,7 +4,6 @@ public class Node {
 	private int number;
 	private int row;
 	private int collumn;
-	private Node parent;
 	private int[][] oldGameState;
 
 	public Node(int value, int row, int collumn, int size) {
@@ -48,13 +47,5 @@ public class Node {
 
 	public void setCollumn(int collumn) {
 		this.collumn = collumn;
-	}
-
-	public Node getParent() {
-		return parent;
-	}
-
-	public void setParent(Node parent) {
-		this.parent = parent;
 	}
 }

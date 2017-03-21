@@ -47,11 +47,12 @@ public class Game {
 		
 		int[][] falseResult = new int[1][1];
 		falseResult[0][0] = -1;
+		Node currentNode;
 		
 		if (this.isCompleted()) return this.getGameMatrix();
-		Node currentNode;
 		if ((currentNode = this.starterNode()) != null) {
 			currentNode.setOldGameState(this.getGameMatrix());
+			
 			for (int var : this.getDomainValues()) {
 				currentNode.setNumber(var);
 				this.gameMatrix[currentNode.getRow()][currentNode.getCollumn()] = var;
@@ -67,7 +68,8 @@ public class Game {
 			}
 			return falseResult;
 		} else {
-			return this.getGameMatrix();
+			if (this.isCompleted()) return this.getGameMatrix();
+			return falseResult;
 		}
 	}
 	
@@ -87,39 +89,34 @@ public class Game {
 	}
 	
 	private boolean isCompleted() {
-		
-		Node[][] board = this.getGameBoard();
+		int[][] matrix = this.getGameMatrix();
 		int[] counts = this.getNumCounts();
-		int checkCount = 0;
+		int rowCheck = 0;
+		int colCheck = 0;
 		int blockCount = 0;
 		
 		for (int a = 1; a < this.getBoardSize() + 1; a++) {
-			if (counts[a] != 9) return false;
-		}
-		
-		ArrayList<Integer> rowCount = new ArrayList<>();
-		for (int i = 0; i < this.getBoardSize(); i++) {
-			for (int j = 0; j < this.getBoardSize(); j++) {
-				Node current = board[i][j];
-				if (rowCount.contains(current.getNumber())) return false;
-				rowCount.add(current.getNumber());
-				checkCount+= current.getNumber();
-			}
-			if (checkCount != 45) return false;
-			checkCount = 0;
-			rowCount = new ArrayList<>();
+			if (counts[a] > 9) return false;
 		}
 		
 		ArrayList<Integer> colCount = new ArrayList<>();
+		ArrayList<Integer> rowCount = new ArrayList<>();
 		for (int i = 0; i < this.getBoardSize(); i++) {
 			for (int j = 0; j < this.getBoardSize(); j++) {
-				Node current = board[j][i];
-				if (colCount.contains(current.getNumber())) return false;
-				colCount.add(current.getNumber());
-				checkCount+= current.getNumber();
+				int currentRow = matrix[i][j];
+				int currentCol = matrix[j][i];
+				if ((currentRow != 0) && rowCount.contains(currentRow)) return false;
+				if ((currentCol != 0) && colCount.contains(currentCol)) return false;
+				rowCount.add(currentRow);
+				colCount.add(currentCol);
+				rowCheck += currentRow;
+				colCheck += currentCol;
 			}
-			if (checkCount != 45) return false;
-			checkCount = 0;
+			if (rowCheck != 45) return false;
+			if (colCheck != 45) return false;
+			rowCheck = 0;
+			colCheck = 0;
+			rowCount = new ArrayList<>();
 			colCount = new ArrayList<>();
 		}
 		
@@ -131,10 +128,10 @@ public class Game {
 			for (int k = 0; k < (this.getBoardSize() / 3); k++) {
 				for (int i = 0; i < 3; i++) {
 					for (int j = 0; j < 3; j++) {
-						Node current = board[i+iOffset][j+jOffset];
-						if (blCount.contains(current.getNumber())) return false;
-						blCount.add(current.getNumber());
-						blockCount+= current.getNumber();
+						int current = matrix[i+iOffset][j+jOffset];
+						if (blCount.contains(current)) return false;
+						blCount.add(current);
+						blockCount+= current;
 					}
 				}
 				if (blockCount != 45) return false;
@@ -153,36 +150,32 @@ public class Game {
 	private boolean isValidState() {
 		int[][] matrix = this.getGameMatrix();
 		int[] counts = this.getNumCounts();
-		int checkCount = 0;
+		int rowCheck = 0;
+		int colCheck = 0;
 		int blockCount = 0;
 		
 		for (int a = 1; a < this.getBoardSize() + 1; a++) {
 			if (counts[a] > 9) return false;
 		}
 		
+		ArrayList<Integer> colCount = new ArrayList<>();
 		ArrayList<Integer> rowCount = new ArrayList<>();
 		for (int i = 0; i < this.getBoardSize(); i++) {
 			for (int j = 0; j < this.getBoardSize(); j++) {
-				int current = matrix[i][j];
-				if ((current != 0) && rowCount.contains(current)) return false;
-				rowCount.add(current);
-				checkCount += current;
+				int currentRow = matrix[i][j];
+				int currentCol = matrix[j][i];
+				if ((currentRow != 0) && rowCount.contains(currentRow)) return false;
+				if ((currentCol != 0) && colCount.contains(currentCol)) return false;
+				rowCount.add(currentRow);
+				colCount.add(currentCol);
+				rowCheck += currentRow;
+				colCheck += currentCol;
 			}
-			if (checkCount > 45) return false;
-			checkCount = 0;
+			if (rowCheck > 45) return false;
+			if (colCheck > 45) return false;
+			rowCheck = 0;
+			colCheck = 0;
 			rowCount = new ArrayList<>();
-		}
-		
-		ArrayList<Integer> colCount = new ArrayList<>();
-		for (int i = 0; i < this.getBoardSize(); i++) {
-			for (int j = 0; j < this.getBoardSize(); j++) {
-				int current = matrix[j][i];
-				if ((current != 0) && colCount.contains(current)) return false;
-				colCount.add(current);
-				checkCount += current;
-			}
-			if (checkCount > 45) return false;
-			checkCount = 0;
 			colCount = new ArrayList<>();
 		}
 		
