@@ -53,20 +53,22 @@ public class Sudoku {
 	    if (count != boardSize*boardSize) throw new RuntimeException("Incorrect number of inputs.");
 
 	    // Solve something
-	    Game game = new Game(vals, boardSize);
-		int[][] solution = game.backtrackingSearch();
-		if (solution[0][0] == -1) {
-			System.out.println("No solution found !");
-		} else {
-			// Output
+	    
+	    //Game game = new Game(vals, boardSize);
+	    
+		GameSolver gs = new GameSolver(vals, boardSize);
+	    if (gs.solver()) {
+	    	// Output
 			System.out.println();
 			System.out.println("Output:");
 			for (int i = 0; i < boardSize; i++) {
 				for (int j = 0; j < boardSize; j++) {
-					System.out.printf("%3d", solution[i][j]);
+					System.out.printf("%3d", gs.getBoardMatrix()[i][j]);
 				}
 				System.out.println();
 			}	
-		}	
+	    } else {
+	    	System.out.println("No Solution");
+	    }
 	}
 }
